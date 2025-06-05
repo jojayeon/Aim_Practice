@@ -1,28 +1,55 @@
-// 시작메인 페이지
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import styles from  '../styles/Startpage.module.css';
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard'>('normal');
+  const [sensitivity, setSensitivity] = useState<number>(5);
+
+  const handleStart = () => {
+    console.log('난이도:', difficulty);
+    console.log('감도:', sensitivity);
+    navigate('/game');
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>에임 연습 - 난이도 및 감도 설정</h1>
-      
-      {/* 간단하게 난이도 버튼 3개 */}
-      <div style={{ marginBottom: '20px' }}>
-        <Button style={{ marginRight: '10px' }}>Easy</Button>
-        <Button style={{ marginRight: '10px' }}>Normal</Button>
-        <Button>Hard</Button>
-      </div>
+    <div className={styles.container}>
+      <h1>🎯 에임 연습</h1>
 
-      {/* 감도 슬라이더 자리 (나중에 구현) */}
-      <div style={{ marginBottom: '20px' }}>
-        감도: <input type="range" min="1" max="10" defaultValue="5" />
-      </div>
+      <section className={styles.section}>
+        <h2>난이도 선택</h2>
+        <div className={styles.difficultyButtons}>
+          {(['easy', 'normal', 'hard'] as const).map((level) => (
+            <Button
+              key={level}
+              onClick={() => setDifficulty(level)}
+              style={{
+                backgroundColor: difficulty === level ? '#28a745' : undefined,
+              }}
+            >
+              {level.toUpperCase()}
+            </Button>
+          ))}
+        </div>
+      </section>
 
-      <Button onClick={() => navigate('/game')}>시작하기</Button>
+      <section className={styles.section}>
+        <h2>감도 설정</h2>
+        <input
+          type="range"
+          min={1}
+          max={10}
+          value={sensitivity}
+          onChange={(e) => setSensitivity(Number(e.target.value))}
+        />
+        <div>현재 감도: {sensitivity}</div>
+      </section>
+
+      <div className={styles.startButton}>
+        <Button onClick={handleStart}>시작하기</Button>
+      </div>
     </div>
   );
 };
