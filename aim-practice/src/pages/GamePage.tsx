@@ -1,20 +1,59 @@
 // 게임 페이지 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import styles from '../styles/GamePage.module.css';
+import Crosshair from '../components/Crosshair';
 
-const GamePage = () => {
-  const navigate = useNavigate();
+const GamePage: React.FC = () => {
+  const mountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mount = mountRef.current!;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    mount.appendChild(renderer.domElement);
+
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Pointer Lock
+    const canvas = renderer.domElement;
+    canvas.addEventListener('click', () => {
+      canvas.requestPointerLock();
+    });
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (document.pointerLockElement === canvas) {
+        camera.rotation.y -= e.movementX * 0.002;
+        camera.rotation.x -= e.movementY * 0.002;
+      }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      mount.removeChild(renderer.domElement);
+    };
+  }, []);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>게임 진행 화면</h1>
-      <p>여기에 게임 씬이 들어갈 예정입니다.</p>
-
-      {/* 점수 표시 자리 */}
-      <div>점수: 0 / 100</div>
-
-      {/* 테스트용 결과 페이지 이동 버튼 */}
-      <button onClick={() => navigate('/result')}>결과 페이지로 이동</button>
+    <div ref={mountRef} className={styles.canvasContainer}>
+      <Crosshair />
     </div>
   );
 };
