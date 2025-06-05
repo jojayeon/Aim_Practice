@@ -1,0 +1,17 @@
+.container {
+  padding: 40px;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.difficultyButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.startButton {
+  margin-top: 40px;
+}
