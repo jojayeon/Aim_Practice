@@ -1,6 +1,33 @@
-.canvasContainer {
+.container {
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  position: relative;
+}
+
+.scoreUI {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 1.5rem;
+  color: black;
+  z-index: 2;
+}
+
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 3;
+}
+
+.result {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
 }
