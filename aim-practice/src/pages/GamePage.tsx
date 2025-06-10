@@ -45,6 +45,13 @@ const GamePage: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [spawnIntervalMs]);
+  //100개가 다 나오면 자동으로 종료되게 설정 
+  useEffect(() => {
+  if (spawnedCount.current === TOTAL_TARGETS && targets.length === 0) {
+    // 100개 모두 생성 완료 + 화면에 남은 타겟 없음 → 게임 종료
+    navigate('/result', { state: { score: hitCount } });
+  }
+}, [targets, hitCount, navigate]);
 
   // 일정 시간 지난 타겟 자동 제거
   useEffect(() => {
