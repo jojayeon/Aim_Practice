@@ -13,7 +13,6 @@ const StartPage = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>🎯 에임 연습</h1>
-      <p className={styles.sensitivity}>감도: 4.0 (고정)</p>
       <Button onClick={handleStart}>시작하기</Button>
     </div>
   );
