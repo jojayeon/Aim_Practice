@@ -18,8 +18,9 @@ const GamePage: React.FC = () => {
   const [hitCount, setHitCount] = useState(0);
 
   const spawnedCount = useRef(0);
-  const spawnIntervalMs = 800;       // 타겟 생성 간격 (ms) — 필요시 수정
-  const lifetimeMs = 1500;           // 타겟이 유지되는 시간 (ms) — 필요시 수정
+  const playAreaRef = useRef<HTMLDivElement>(null); // 플레이 영역 참조
+  const spawnIntervalMs = 700;       // 타겟 생성 간격 (ms) — 필요시 수정
+  const lifetimeMs = 1400;           // 타겟이 유지되는 시간 (ms) — 필요시 수정
 
   // 타겟 생성
   useEffect(() => {
@@ -30,12 +31,8 @@ const GamePage: React.FC = () => {
       }
       const newTarget: Target = {
         id: crypto.randomUUID(),
-
-        // 🔧 타겟 위치 범위 (수정 가능)
-        // 아래 수식은 화면의 10% ~ 90% 범위 안에서 무작위 위치를 의미합니다.
         x: Math.random() * 88 + 10,  // x 위치 (10% ~ 90%)
         y: Math.random() * 85 + 10,  // y 위치 (10% ~ 90%)
-
         createdAt: Date.now(),
       };
       setTargets((prev) => [...prev, newTarget]);
@@ -57,21 +54,22 @@ const GamePage: React.FC = () => {
 
   // 클릭 처리
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log('현재 타겟 수:', targets.length);
-    console.log('클릭 좌표:', e.clientX, e.clientY);
-    console.log('타겟 위치:', targets.map(t => ({x: t.x, y: t.y})));
-    const screenW = window.innerWidth;
-    const screenH = window.innerHeight;
+    if (!playAreaRef.current) return;
+
+    const playArea = playAreaRef.current;
+    const playAreaTop = playArea.offsetTop;
+    const playAreaLeft = playArea.offsetLeft;
+    const playAreaWidth = playArea.offsetWidth;
+    const playAreaHeight = playArea.offsetHeight;
 
     for (const target of targets) {
-      const targetX = (target.x / 100) * screenW;
-      const targetY = (target.y / 100) * screenH;
-      const distance = Math.hypot(targetX - e.clientX, targetY - e.clientY);
-      console.log('화면 크기:', screenW, screenH);
+      // 타겟의 실제 픽셀 좌표 (플레이 영역 기준)
+      const targetX = (target.x / 100) * playAreaWidth + playAreaLeft;
+      const targetY = (target.y / 100) * playAreaHeight + playAreaTop;
 
-      // 🎯 클릭 허용 범위 (수정 가능)
-      // 현재는 타겟 중심 기준 반경 30px 이내일 때 명중 처리
-      if (distance <= 21) {
+      const distance = Math.hypot(targetX - e.clientX, targetY - e.clientY);
+
+      if (distance <= 8.2) {
         setHitCount((prev) => prev + 1);
         setTargets((prev) => prev.filter(t => t.id !== target.id));
         break;
@@ -85,20 +83,19 @@ const GamePage: React.FC = () => {
       navigate('/result', { state: { score: hitCount } });
     }
   }, [targets, hitCount, navigate]);
-  
+
   return (
     <div className={styles.container} onClick={handleClick}>
       <div className={styles.info}>
         맞춘 타겟: {hitCount} / {TOTAL_TARGETS}
       </div>
 
-      <div className={styles.playArea}>
+      <div className={styles.playArea} ref={playAreaRef}>
         {targets.map(target => (
           <TargetItem
             key={target.id}
             x={target.x}
             y={target.y}
-            // 💡 TargetItem 컴포넌트 내부에서 타겟 크기를 조절할 수 있습니다 (예: 0.3 ~ 0.5 크기 등)
           />
         ))}
       </div>
