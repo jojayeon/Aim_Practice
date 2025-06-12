@@ -6,9 +6,13 @@ import Button from '../components/Button';
 const StartPage = () => {
   const navigate = useNavigate();
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [sensitivity, setSensitivity] = useState(1); // 기본 감도
 
   const handleStart = () => {
-    navigate('/game', { state: { difficulty } });
+    // 감도는 0.1 ~ 10 범위로 제한
+    const validSensitivity = Math.max(0.1, Math.min(10, sensitivity));
+
+    navigate('/game', { state: { difficulty, sensitivity: validSensitivity } });
   };
 
   return (
@@ -29,6 +33,21 @@ const StartPage = () => {
             {level.toUpperCase()}
           </Button>
         ))}
+      </div>
+
+      <div className={styles.sensitivityInput} style={{ marginTop: '20px' }}>
+        <label htmlFor="sensitivity" style={{ marginRight: '10px' }}>
+          감도 (0.1 ~ 10):
+        </label>
+        <input
+          id="sensitivity"
+          type="number"
+          min="0.1"
+          max="10"
+          step="0.1"
+          value={sensitivity}
+          onChange={(e) => setSensitivity(parseFloat(e.target.value))}
+        />
       </div>
 
       <Button onClick={handleStart} style={{ marginTop: '20px' }}>
