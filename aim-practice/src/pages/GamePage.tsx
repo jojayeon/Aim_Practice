@@ -118,7 +118,7 @@ const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const targetY = playAreaRect.top + (target.y / 100) * playAreaRect.height;
     const distance = Math.hypot(targetX - clickX, targetY - clickY);
 
-    if (distance <= (targetSize / 2)+0.3) {
+    if (distance <= (targetSize / 2)+0.5) {
       // 적중 처리
       setHitCount((prev) => prev + 1);
       setTargets((prev) => prev.filter((t) => t.id !== target.id));
