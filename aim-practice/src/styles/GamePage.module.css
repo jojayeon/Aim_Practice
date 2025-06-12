@@ -21,7 +21,7 @@
 }
 
 .aim {
-  position: fixed; /* 화면 기준으로 고정 */
+  position: absolute; 
   width: 15px;
   height: 15px;
   background-color: transparent;
