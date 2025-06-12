@@ -5,4 +5,5 @@
   background-color: red;
   border-radius: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0.5px #000;
 }
