@@ -1,5 +1,6 @@
+// src/pages/GamePage.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TargetItem from '../components/TargetItem';
 import styles from '../styles/GamePage.module.css';
 
@@ -11,25 +12,71 @@ interface Target {
 }
 
 const TOTAL_TARGETS = 100;
-
-const difficultyParams = {
-  easy: { spawnIntervalMs: 1500, lifetimeMs: 3000, targetSize: 24 },
-  medium: { spawnIntervalMs: 1000, lifetimeMs: 2000, targetSize: 16 },
-  hard: { spawnIntervalMs: 700, lifetimeMs: 1400, targetSize: 12 },
-};
+const SENSITIVITY = 3.0; // 감도 2배
 
 const GamePage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const difficulty = (location.state?.difficulty as 'easy' | 'medium' | 'hard') || 'medium';
-
   const [targets, setTargets] = useState<Target[]>([]);
   const [hitCount, setHitCount] = useState(0);
+
   const spawnedCount = useRef(0);
   const playAreaRef = useRef<HTMLDivElement>(null);
+  const aimRef = useRef<HTMLDivElement>(null);
+  const aimPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
-  const { spawnIntervalMs, lifetimeMs, targetSize } = difficultyParams[difficulty];
+  const spawnIntervalMs = 700;
+  const lifetimeMs = 1400;
 
+  // Pointer Lock
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!aimRef.current) return;
+
+      aimPos.current.x += e.movementX * SENSITIVITY;
+      aimPos.current.y += e.movementY * SENSITIVITY;
+
+      // 화면 경계 제한
+      aimPos.current.x = Math.max(0, Math.min(window.innerWidth, aimPos.current.x));
+      aimPos.current.y = Math.max(0, Math.min(window.innerHeight, aimPos.current.y));
+
+      aimRef.current.style.left = `${aimPos.current.x}px`;
+      aimRef.current.style.top = `${aimPos.current.y}px`;
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const requestPointerLock = () => {
+    playAreaRef.current?.requestPointerLock();
+  };
+
+  // 클릭 처리
+  const handleClick = () => {
+    const aimX = aimPos.current.x;
+    const aimY = aimPos.current.y;
+
+    const playArea = playAreaRef.current;
+    if (!playArea) return;
+
+    const rect = playArea.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    for (const target of targets) {
+      const targetX = (target.x / 100) * width + rect.left;
+      const targetY = (target.y / 100) * height + rect.top;
+
+      const distance = Math.hypot(targetX - aimX, targetY - aimY);
+      if (distance <= 8.2) {
+        setHitCount((prev) => prev + 1);
+        setTargets((prev) => prev.filter(t => t.id !== target.id));
+        break;
+      }
+    }
+  };
+
+  // 타겟 생성
   useEffect(() => {
     const interval = setInterval(() => {
       if (spawnedCount.current >= TOTAL_TARGETS) {
@@ -38,50 +85,29 @@ const GamePage: React.FC = () => {
       }
       const newTarget: Target = {
         id: crypto.randomUUID(),
-        x: Math.random() * 80 + 10,
-        y: Math.random() * 80 + 10,
+        x: Math.random() * 88 + 10,
+        y: Math.random() * 85 + 10,
         createdAt: Date.now(),
       };
       setTargets((prev) => [...prev, newTarget]);
       spawnedCount.current += 1;
     }, spawnIntervalMs);
-
     return () => clearInterval(interval);
-  }, [spawnIntervalMs]);
+  }, []);
 
+  // 타겟 제거
   useEffect(() => {
     const cleanup = setInterval(() => {
       const now = Date.now();
-      setTargets((prev) => prev.filter((t) => now - t.createdAt < lifetimeMs));
+      setTargets(prev => prev.filter(t => now - t.createdAt < lifetimeMs));
     }, 500);
-
     return () => clearInterval(cleanup);
-  }, [lifetimeMs]);
+  }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!playAreaRef.current) return;
-    const playArea = playAreaRef.current;
-    const playAreaTop = playArea.offsetTop;
-    const playAreaLeft = playArea.offsetLeft;
-    const playAreaWidth = playArea.offsetWidth;
-    const playAreaHeight = playArea.offsetHeight;
-
-    for (const target of targets) {
-      const targetX = (target.x / 100) * playAreaWidth + playAreaLeft;
-      const targetY = (target.y / 100) * playAreaHeight + playAreaTop;
-
-      const distance = Math.hypot(targetX - e.clientX, targetY - e.clientY);
- 
-      if (distance <= (targetSize/2)+0.2) {
-        setHitCount((prev) => prev + 1);
-        setTargets((prev) => prev.filter((t) => t.id !== target.id));
-        break;
-      }
-    }
-  };
-
+  // 게임 종료
   useEffect(() => {
     if (spawnedCount.current === TOTAL_TARGETS && targets.length === 0) {
+      document.exitPointerLock(); // 포인터 잠금 해제
       navigate('/result', { state: { score: hitCount } });
     }
   }, [targets, hitCount, navigate]);
@@ -89,13 +115,18 @@ const GamePage: React.FC = () => {
   return (
     <div className={styles.container} onClick={handleClick}>
       <div className={styles.info}>
-        난이도: {difficulty.toUpperCase()} / 맞춘 타겟: {hitCount} / {TOTAL_TARGETS}
+        맞춘 타겟: {hitCount} / {TOTAL_TARGETS}
       </div>
 
-      <div className={styles.playArea} ref={playAreaRef}>
-        {targets.map((target) => (
-          <TargetItem key={target.id} x={target.x} y={target.y} size={targetSize} />
+      <div
+        className={styles.playArea}
+        ref={playAreaRef}
+        onClick={requestPointerLock}
+      >
+        {targets.map(target => (
+          <TargetItem key={target.id} x={target.x} y={target.y} size={16} />
         ))}
+        <div ref={aimRef} className={styles.aim} />
       </div>
     </div>
   );
