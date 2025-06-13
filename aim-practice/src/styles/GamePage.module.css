@@ -20,6 +20,7 @@
   position: relative;
   cursor: none;
 }
+
 .aim {
   position: absolute; 
   width: 15px;
@@ -33,6 +34,7 @@
 .aim::before {
   content: '';
   position: absolute;
+  background-color: black;
   top: 50%;
   left: 0;
   width: 100%;
@@ -43,6 +45,7 @@
 .aim::after {
   content: '';
   position: absolute;
+  background-color: black;
   top: 0;
   left: 50%;
   width: 2px;
