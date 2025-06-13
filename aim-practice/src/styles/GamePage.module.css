@@ -18,8 +18,8 @@
   flex: 1;
   width: 100%;
   position: relative;
+  cursor: none;
 }
-
 .aim {
   position: absolute; 
   width: 15px;
@@ -30,15 +30,9 @@
   top: 50%;
   left: 50%;
 }
-
-.aim::before,
-.aim::after {
+.aim::before {
   content: '';
   position: absolute;
-  background-color: black;
-}
-
-.aim::before {
   top: 50%;
   left: 0;
   width: 100%;
@@ -47,6 +41,8 @@
 }
 
 .aim::after {
+  content: '';
+  position: absolute;
   top: 0;
   left: 50%;
   width: 2px;
