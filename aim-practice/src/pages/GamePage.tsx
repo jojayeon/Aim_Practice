@@ -80,9 +80,12 @@ const GamePage: React.FC = () => {
         let newX = pos.x + e.movementX * sensitivity;
         let newY = pos.y + e.movementY * sensitivity;
 
+        const margin = 10; 
+        // 조준점 반지름 + 여유//화면밖으로 나가는 translate(-50%)을 방지하기 위한 조치
+
         // 화면 밖으로 나가지 않도록 제한
-        newX = Math.min(Math.max(newX, 0), window.innerWidth);
-      newY = Math.min(Math.max(newY, 0), window.innerHeight);
+        newX = Math.min(Math.max(newX, margin), window.innerWidth - margin);
+        newY = Math.min(Math.max(newY, margin), window.innerHeight - margin);
 
         return { x: newX, y: newY };
       });
@@ -153,7 +156,6 @@ const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         <div
           className={styles.aim}
           style={{
-            position: 'fixed',
             top: aimPos.y,
             left: aimPos.x,
             transform: 'translate(-50%, -50%)',
