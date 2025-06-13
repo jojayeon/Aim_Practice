@@ -117,8 +117,9 @@ const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
 
   // 타겟과 비교할 때도 절대 좌표 기준으로 계산
   for (const target of targets) {
-    const targetX = playAreaRect.left + (target.x / 100) * playAreaRect.width;
-    const targetY = playAreaRect.top + (target.y / 100) * playAreaRect.height;
+    const targetX = (target.x / 100) * playAreaRect.width;
+    const targetY = (target.y / 100) * playAreaRect.height;
+    
     const distance = Math.hypot(targetX - clickX, targetY - clickY);
 
     if (distance <= (targetSize / 2)+0.5) {
