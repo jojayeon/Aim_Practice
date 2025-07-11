@@ -69,7 +69,7 @@ PFS게임관 비슷하게 3D버전으로 만들면 좋겠다는 생각을 하게
 
 🌐 사이트
 
-[바로가기](https://my-home-86of.vercel.app/)
+[바로가기](https://aim-practice.vercel.app/)
 
 ----------------------------------------
 
