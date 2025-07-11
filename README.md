@@ -59,8 +59,6 @@ aim-practice/
 │   └── index.js
 ├── package.json
 └── README.md
-⚙️ 설치 및 실행 방법
-저장소 클론
 ```
 
 💡 추가 요소
