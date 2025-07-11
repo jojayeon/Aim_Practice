@@ -20,11 +20,11 @@
 
 🚀 주요 기능 및 페이지 구성
 
-<img width="707" height="569" alt="222" src="https://github.com/user-attachments/assets/c43f9b23-7540-49a1-b372-8ab09a1cd52d" />
+<img width="416" height="417" alt="111" src="https://github.com/user-attachments/assets/c99be6a9-a661-49a7-a51c-22e82ddf8ae3" />
 
 Start	감도(sensitivity)·난이도(difficulty) 설정, 시작 버튼	
 
-<img width="416" height="417" alt="111" src="https://github.com/user-attachments/assets/c99be6a9-a661-49a7-a51c-22e82ddf8ae3" />
+<img width="707" height="569" alt="222" src="https://github.com/user-attachments/assets/c43f9b23-7540-49a1-b372-8ab09a1cd52d" />
 
 Game	실제 에임 연습 진행
 
