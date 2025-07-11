@@ -65,6 +65,8 @@ aim-practice/
 
 PFS게임관 비슷하게 3D버전으로 만들면 좋겠다는 생각을 하게 되었다.
 
+[바로가기](https://github.com/jojayeon/Aim_Practice_3D)
+
 ----------------------------------------
 
 🌐 사이트
