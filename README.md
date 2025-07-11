@@ -19,6 +19,7 @@
 ----------------------------------------
 
 🚀 주요 기능 및 페이지 구성
+
 <img width="707" height="569" alt="222" src="https://github.com/user-attachments/assets/c43f9b23-7540-49a1-b372-8ab09a1cd52d" />
 
 Start	감도(sensitivity)·난이도(difficulty) 설정, 시작 버튼	
